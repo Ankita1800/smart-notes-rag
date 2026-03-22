@@ -1,0 +1,31 @@
+Smart Notes RAG Docker Setup (Windows + PowerShell)
+
+1) Start Docker Desktop first.
+If Docker Desktop is not running, docker compose commands will fail.
+
+2) Go to the project folder.
+Command: cd D:\Downloads\smart-notes-rag
+
+3) Start Endee with Docker Compose.
+Command: docker compose up -d
+
+4) Check container status.
+Command: docker compose ps
+Expected: container endee-server is Up (healthy).
+
+5) Endee dashboard URL.
+http://localhost:8090
+
+6) Start Flask app in another terminal.
+Command: .venv\Scripts\python.exe app.py
+
+7) Open app in browser.
+http://127.0.0.1:5000
+
+8) Use flow in order.
+Upload notes first, then ask question.
+
+Common issues and fixes:
+- Port conflict on 8080: project already maps Endee to 8090, so use 8090 URLs.
+- Query says no notes loaded: upload a file before asking.
+- Docker error about daemon: open Docker Desktop and wait until it is fully started.
