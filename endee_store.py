@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 INDEX_NAME = "notes_index"
-ENDEE_URL = "http://localhost:8080/api/v1"
+ENDEE_URL = "http://localhost:8090/api/v1"
 # If you set NDD_AUTH_TOKEN on the server, pass the same value here:
 ENDEE_AUTH_TOKEN = ""   # leave empty for local dev (no auth)
 
@@ -128,11 +128,21 @@ def search_chunks(query_embedding: list[float], top_k: int = 3) -> list[dict]:
 
     hits = []
     for result in results:
-        meta = result.meta or {}
+        if isinstance(result, dict):
+            meta = result.get("meta") or result.get("metadata") or {}
+            similarity = result.get("similarity")
+            if similarity is None:
+                similarity = result.get("score", 0.0)
+        else:
+            meta = getattr(result, "meta", None) or getattr(result, "metadata", None) or {}
+            similarity = getattr(result, "similarity", None)
+            if similarity is None:
+                similarity = getattr(result, "score", 0.0)
+
         hits.append({
             "text": meta.get("text", ""),
             "chunk_index": meta.get("chunk_index", -1),
-            "similarity": round(float(result.similarity), 4),
+            "similarity": round(float(similarity or 0.0), 4),
         })
 
     return hits

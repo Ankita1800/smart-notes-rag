@@ -3,7 +3,7 @@ services:
     image: endeeio/endee-server:latest
     container_name: endee-server
     ports:
-      - "8080:8080"
+      - "8090:8080"
     ulimits:
       nofile: 100000
     logging:

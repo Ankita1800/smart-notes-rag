@@ -55,7 +55,7 @@ Unlike a general LLM, RAG grounds answers in *your* documents — making it accu
 │                 endee_store.py                           │
 │   create_index / upsert vectors / query top-k           │
 └──────────────────────────┬───────────────────────────────┘
-                           │  HTTP  localhost:8080
+                           │  HTTP  localhost:8090
                            ▼
 ┌──────────────────────────────────────────────────────────┐
 │           ENDEE VECTOR DATABASE  (Docker)               │
@@ -143,8 +143,8 @@ client.create_index(
 docker compose up -d
 ```
 
-Endee now runs at **http://localhost:8080**.  
-Dashboard: http://localhost:8080 (view your indexes visually)
+Endee now runs at **http://localhost:8090**.  
+Dashboard: http://localhost:8090 (view your indexes visually)
 
 ### Step 2 — Python environment
 
@@ -281,7 +281,7 @@ Q: Explain the Industrial Revolution
 
 | Problem | Fix |
 |---------|-----|
-| `Connection refused localhost:8080` | Run `docker compose up -d` |
+| `Connection refused localhost:8090` | Run `docker compose up -d` |
 | `No module named 'endee'` | Run `pip install endee` |
 | `No module named 'sentence_transformers'` | Run `pip install sentence-transformers` |
 | Slow first query | Model is loading (~3–5s first time, cached after) |

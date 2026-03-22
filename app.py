@@ -11,6 +11,7 @@ Routes:
 """
 
 import os
+import socket
 import logging
 from flask import Flask, render_template, request, jsonify
 from werkzeug.utils import secure_filename
@@ -44,6 +45,17 @@ _notes_state: dict = {
 
 def _allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def _is_endee_reachable(timeout_seconds: float = 1.5) -> bool:
+    """Fast socket-level check to avoid blocking on SDK calls when Endee is down."""
+    host = "localhost"
+    port = 8090
+    try:
+        with socket.create_connection((host, port), timeout=timeout_seconds):
+            return True
+    except OSError:
+        return False
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -139,12 +151,7 @@ def ask():
 @app.route("/status")
 def status():
     """Quick health-check endpoint."""
-    endee_ok = False
-    try:
-        ensure_index()
-        endee_ok = True
-    except Exception as exc:
-        logger.warning("Endee health check failed: %s", exc)
+    endee_ok = _is_endee_reachable()
 
     return jsonify({
         "endee": "ok" if endee_ok else "error – is Docker running?",
@@ -157,14 +164,5 @@ def status():
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    logger.info("Initialising Endee index …")
-    try:
-        ensure_index()
-        logger.info("Endee ready.")
-    except Exception as exc:
-        logger.warning(
-            "Could not connect to Endee: %s\n"
-            "Make sure the server is running: docker compose up -d",
-            exc,
-        )
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    logger.info("Skipping blocking Endee init at startup (lazy init on upload).")
+    app.run(host="0.0.0.0", port=5000, debug=False)
